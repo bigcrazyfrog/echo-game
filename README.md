@@ -12,6 +12,8 @@ This repository contains the code for **Echo game**.
 
 Целевая аудитория – молодые люди от 16 до 30 лет.
 
+---
+
 ## Documentation
 
 This project has been developed using [C#][C#] and [Monogame][Monogame].
