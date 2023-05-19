@@ -18,8 +18,7 @@ namespace Echo
         private Texture2D texture;
         public Vector2 pos;
         private Vector2 direction;
-        private int r = 4;
-        private int speed = 10;
+        private int r = 10;
 
         public Bullet(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, Vector2 pos, Vector2 direction)
         {
@@ -51,9 +50,7 @@ namespace Echo
 
         public void Draw()
         {
-            _spriteBatch.Begin();
             _spriteBatch.Draw(texture, pos, Color.White);
-            _spriteBatch.End();
         }
     }
 
@@ -63,6 +60,8 @@ namespace Echo
         private SpriteBatch _spriteBatch;
 
         private HashSet<Bullet> bullets;
+
+        private int speed = 10;
 
         public int Count { get { return bullets.Count; } }
 
@@ -76,7 +75,7 @@ namespace Echo
 
         public void add(Vector2 pos, Vector2 direction)
         {           
-             bullets.Add(new Bullet(_graphicsDevice, _spriteBatch, pos, direction));
+             bullets.Add(new Bullet(_graphicsDevice, _spriteBatch, pos, direction * speed));
         }
 
         public void Update(Map map, ref Fragments fragments)

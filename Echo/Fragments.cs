@@ -50,9 +50,7 @@ namespace Echo
 
         public void Draw()
         {
-            _spriteBatch.Begin();
             _spriteBatch.Draw(texture, pos, Color.White);
-            _spriteBatch.End();
         }
     }
 
@@ -76,7 +74,7 @@ namespace Echo
 
         public void add(Vector2 bulletPos)
         {
-            var count = 100;
+            var count = 200;
             var pos = new Vector2[count];
 
             for (int i = 0; i < pos.Length; i++)
@@ -92,6 +90,7 @@ namespace Echo
 
                 direction[i] = new Vector2((float)dx, (float)dy);
             }
+
             for (int i = 0; i < count; i++)
                 fragments.Add(new Fragment(_graphicsDevice, _spriteBatch, pos[i], direction[i]));
         }

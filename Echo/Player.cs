@@ -18,6 +18,7 @@ namespace Echo
 
         private Texture2D texture;
         private Texture2D lastTexture;
+        private Vector2 size = new Vector2(64, 64);
 
         public Vector2 pos;
         private Vector2 lastPos;
@@ -38,23 +39,28 @@ namespace Echo
             speedMax = 10;
         }
 
-        private void Control()
+        private void Control(BulletManager bulletManager, Camera camera)
         {
-            KeyboardState keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.Left))
+            if (KeyboardManager.State.IsKeyDown(Keys.Left))
                 speed.X = -speedMax;
-            if (keyboardState.IsKeyDown(Keys.Right))
+            if (KeyboardManager.State.IsKeyDown(Keys.Right))
                 speed.X = speedMax;
-            if (keyboardState.IsKeyDown(Keys.Up))
+            if (KeyboardManager.State.IsKeyDown(Keys.Up))
                 speed.Y = -speedMax;
-            if (keyboardState.IsKeyDown(Keys.Down))
+            if (KeyboardManager.State.IsKeyDown(Keys.Down))
                 speed.Y = speedMax;
+
+            if (MouseManager.LeftClicked)
+            {
+                Vector2 dir = MouseManager.MousePosition - Global.Screen / 2 - size / 2;
+                bulletManager.add(camera.position + size / 2,
+                                  dir / dir.Length());
+            }
         }
 
-        public void Update(Map map, BulletManager bulletManager)
+        public void Update(Map map, BulletManager bulletManager, Camera camera)
         {
-            this.Control();
+            this.Control(bulletManager, camera);
 
             lastPos = pos;
 
@@ -73,23 +79,12 @@ namespace Echo
                     speed.Y -= 1;
                 else
                     speed.Y += 1;
-
-
-            KeyboardState keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.Space))
-                bulletManager.add(new Vector2(this.pos.X + 32, this.pos.Y + 32), new Vector2(0, 10));
-
-
         }
 
         public void Draw()
         {
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(lastTexture, lastPos, Color.White);
-            _spriteBatch.Draw(texture, pos, Color.White);
-            _spriteBatch.End();
+            //_spriteBatch.Draw(lastTexture, lastPos, Color.White);
+            _spriteBatch.Draw(texture, Global.Screen / 2, Color.White);
         }
-
     }
 }
