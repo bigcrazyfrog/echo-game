@@ -16,6 +16,8 @@ namespace Echo
         public Matrix transform { get; private set; }
         public float delay { get; set; } = 0.1f;
 
+        public float Zoom { get; private set; } = 1.0f;
+
         public Camera(Vector2 pos)
         {
             this.position = pos;
@@ -25,10 +27,11 @@ namespace Echo
         {
             float d = delay;
 
-            position = pos;
+            position = position + (pos - position) * d;
 
-            transform = Matrix.CreateTranslation((int)-position.X + Global.Screen.X / 2,
-                                                 (int)-position.Y + Global.Screen.Y / 2, 0);
+            transform = Matrix.CreateTranslation(((int)-position.X ) + Global.Screen.X / 2,
+                                                 ((int)-position.Y ) + Global.Screen.Y / 2, 0) *
+                                                 Matrix.CreateScale(new Vector3(Zoom, Zoom, 1));
         }
     }
 }

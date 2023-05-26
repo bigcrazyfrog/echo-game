@@ -11,35 +11,37 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Echo
 {
-    internal class Player
+    public class Player
     {
-        private GraphicsDevice _graphicsDevice;
-        private SpriteBatch _spriteBatch;
+        public Texture2D texture;
+        public Vector2 size = new Vector2(50, 50);
 
-        private Texture2D texture;
-        private Texture2D lastTexture;
-        private Vector2 size = new Vector2(64, 64);
+        public string Team;
+        public int id;
+
+        public int XP;
 
         public Vector2 pos;
-        private Vector2 lastPos;
-        private Vector2 speed;
+        public Vector2 speed;
 
         private float speedMax;
 
-        public Player(ContentManager content, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
+        public Player(ContentManager content, string team)
         {
-            this._graphicsDevice = graphicsDevice;
-            this._spriteBatch = spriteBatch;
+            this.Team = team;
+
+            Random rnd = new Random();
+            this.id = rnd.Next(1024);
+            XP = 3;
 
             texture = content.Load<Texture2D>("player");
-            lastTexture = content.Load<Texture2D>("last_player");
 
             pos = new Vector2(500, 500);
             speed = new Vector2(0, 0);
             speedMax = 10;
         }
 
-        private void Control(BulletManager bulletManager, Camera camera)
+        private void Control(GraphicsDevice gd, Camera camera)
         {
             if (KeyboardManager.State.IsKeyDown(Keys.Left))
                 speed.X = -speedMax;
@@ -53,19 +55,22 @@ namespace Echo
             if (MouseManager.LeftClicked)
             {
                 Vector2 dir = MouseManager.MousePosition - Global.Screen / 2 - size / 2;
-                bulletManager.add(camera.position + size / 2,
-                                  dir / dir.Length());
+                BulletManager.add(gd, pos + size / 2,
+                                  dir / dir.Length(), Team, id);
             }
         }
 
-        public void Update(Map map, BulletManager bulletManager, Camera camera)
+        public bool Update(GraphicsDevice gd, Map map, Camera camera)
         {
-            this.Control(bulletManager, camera);
+            this.Control(gd, camera);
 
-            lastPos = pos;
+            if (map.Collision((int)(pos.X + speed.X + 10), (int)(pos.Y + 10), (int)size.X / 2)) {
+                pos += new Vector2(speed.X, 0);
+            }
 
-            if (map.Collision((int)(pos.X + speed.X), (int)(pos.Y + speed.Y), 32)) {
-                pos += speed;
+            if (map.Collision((int)(pos.X) + 10, (int)(pos.Y + speed.Y) + 10, (int)size.X / 2))
+            {
+                pos += new Vector2(0, speed.Y);
             }
 
             if (speed.X != 0)
@@ -79,12 +84,14 @@ namespace Echo
                     speed.Y -= 1;
                 else
                     speed.Y += 1;
+
+            return true;
         }
 
         public void Draw()
         {
             //_spriteBatch.Draw(lastTexture, lastPos, Color.White);
-            _spriteBatch.Draw(texture, Global.Screen / 2, Color.White);
+            Global._spriteBatch.Draw(texture, pos, Color.White);
         }
     }
 }

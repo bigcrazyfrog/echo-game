@@ -10,37 +10,45 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Echo
 {
-    class Bullet
+    public class Bullet
     {
-        private GraphicsDevice _graphicsDevice;
-        private SpriteBatch _spriteBatch;
-
         private Texture2D texture;
         public Vector2 pos;
         private Vector2 direction;
+
         private int r = 10;
+        public int id;
 
-        public Bullet(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, Vector2 pos, Vector2 direction)
+        public string Team;
+
+        public Bullet(GraphicsDevice gd, Vector2 pos, Vector2 direction, string team, int id)
         {
-            this._graphicsDevice = graphicsDevice;
-            this._spriteBatch = spriteBatch;
-
             this.pos = pos;
             this.direction = direction;
+
+            this.Team = team;
+            this.id = id;
 
             var rectangle = new Rectangle(0, 0, r, r);
 
             Color[] data = new Color[rectangle.Width * rectangle.Height];
-            texture = new Texture2D(graphicsDevice, rectangle.Width, rectangle.Height);
+            texture = new Texture2D(gd, rectangle.Width, rectangle.Height);
+
+            Color color = new Color(255, 255, 255);
+            if (team != Global.team)
+                color = new Color(255, 0, 0);
 
             for (int i = 0; i < data.Length; ++i)
-                data[i] = new Color(255, 255, 255);
+                data[i] = color;
 
             texture.SetData(data);
         }
 
         public bool Update(Map map)
         {
+            if (BotManager.BulletCollision(pos, Team))
+                return false;
+
             if (!map.Collision((int)pos.X + (int)direction.X, (int)pos.Y + (int)direction.Y, r))
                 return false;
 
@@ -50,45 +58,44 @@ namespace Echo
 
         public void Draw()
         {
-            _spriteBatch.Draw(texture, pos, Color.White);
+            Global._spriteBatch.Draw(texture, pos, Color.White);
         }
     }
 
-    internal class BulletManager
+    public static class BulletManager
     {
-        private GraphicsDevice _graphicsDevice;
-        private SpriteBatch _spriteBatch;
+        private static HashSet<Bullet> bullets = new HashSet<Bullet>();
 
-        private HashSet<Bullet> bullets;
+        private static int speed = 10;
 
-        private int speed = 10;
+        public static int Count { get { return bullets.Count; } }
 
-        public int Count { get { return bullets.Count; } }
-
-        public BulletManager(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
+        public static void add(GraphicsDevice gd, Vector2 pos, Vector2 direction, string team, int id)
         {
-            this._graphicsDevice = graphicsDevice;
-            this._spriteBatch = spriteBatch;
+            int count = 0;
+            foreach (Bullet bullet in bullets)
+                if (bullet.id == id)
+                {
+                    count += 1;
+                    if (count > 2)
+                        return;
+                }
 
-            bullets = new HashSet<Bullet>();
+            bullets.Add(new Bullet(gd, pos, direction * speed, team, id));
         }
 
-        public void add(Vector2 pos, Vector2 direction)
-        {           
-             bullets.Add(new Bullet(_graphicsDevice, _spriteBatch, pos, direction * speed));
-        }
-
-        public void Update(Map map, ref Fragments fragments)
+        public static void Update(GraphicsDevice gd, Map map)
         {
             foreach (Bullet bullet in bullets)
                 if (!bullet.Update(map))
                 {
-                    fragments.add(bullet.pos);
+                    if (bullet.Team == Global.team)
+                        FragmentManager.add(gd, bullet.pos);
                     bullets.Remove(bullet);
                 }
         }
 
-        public void Draw()
+        public static void Draw()
         {
             foreach (Bullet bullet in bullets)
                 bullet.Draw();

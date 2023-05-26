@@ -8,21 +8,15 @@ namespace Echo
 {
     public class Game1 : Game
     {
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-
         private Player player;
         private Map map;
-        private Fragments fragments;
-        private BulletManager bulletManager;
 
         private Texture2D rectTexture;
         private Camera camera;
 
-
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            Global._graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -33,21 +27,26 @@ namespace Echo
 
             camera = new Camera(new Vector2(300, 300));
 
-            _graphics.PreferredBackBufferWidth = (int)Global.Screen.X;
-            _graphics.PreferredBackBufferHeight = (int)Global.Screen.Y;
-            _graphics.ApplyChanges();
+            Global._graphics.PreferredBackBufferWidth = (int)Global.Screen.X;
+            Global._graphics.PreferredBackBufferHeight = (int)Global.Screen.Y;
+            Global._graphics.ApplyChanges();
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Global._spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            player = new Player(Content, GraphicsDevice, _spriteBatch);
+            Global.team = "white";
+
+            player = new Player(Content, Global.team);
             map = new Map();
-            fragments = new Fragments(GraphicsDevice, _spriteBatch);
-            bulletManager = new BulletManager(GraphicsDevice, _spriteBatch);
+
+            
+            //BotManager.add(Content, "white");
+            BotManager.add(Content, "Red");
+            
 
             // TODO: use this.Content to load your game content here
             var rectangle = new Rectangle(0, 0, (int)Global.Screen.X, (int)Global.Screen.Y);
@@ -72,14 +71,14 @@ namespace Echo
             MouseManager.Update();
             KeyboardManager.Update();
 
+            BotManager.Update(GraphicsDevice, map, camera);
+
             camera.Update(player.pos);
 
-            player.Update(map, bulletManager, camera);
-            fragments.Update(map, player);
-            bulletManager.Update(map, ref fragments);
+            player.Update(GraphicsDevice, map, camera);
+            FragmentManager.Update(map, player);
+            BulletManager.Update(GraphicsDevice, map);
             // TODO: Add your update logic here
-
-
 
             base.Update(gameTime);
         }
@@ -88,20 +87,20 @@ namespace Echo
         {
             var color = new Color(6, 6, 6, 255);
 
-            // GraphicsDevice.Clear(color);
+            GraphicsDevice.Clear(color);
             // отрисовка спрайта
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(rectTexture, new Vector2(0, 0), Color.White);
-            _spriteBatch.End();
+            /*
+            Global._spriteBatch.Begin();
+            Global._spriteBatch.Draw(rectTexture, new Vector2(0, 0), Color.White);
+            Global._spriteBatch.End();*/
 
-            _spriteBatch.Begin(transformMatrix: camera.transform);
-            fragments.Draw();
-            bulletManager.Draw();
-            _spriteBatch.End();
-
-            _spriteBatch.Begin();
+            Global._spriteBatch.Begin(transformMatrix: camera.transform);
+            FragmentManager.Draw();
+            BulletManager.Draw();
+            BotManager.Draw();
             player.Draw();
-            _spriteBatch.End();
+            Global._spriteBatch.End();
+
 
             base.Draw(gameTime);
         }
@@ -109,7 +108,10 @@ namespace Echo
 
     public static class Global
     {
-        public static readonly Vector2 Screen = new Vector2(1400, 850);
+        public static Vector2 Screen = new Vector2(1400, 850);
+        public static GraphicsDeviceManager _graphics;
+        public static SpriteBatch _spriteBatch;
 
+        public static string team;
     }
 }
