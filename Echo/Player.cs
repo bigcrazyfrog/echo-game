@@ -25,8 +25,10 @@ namespace Echo
         public Vector2 speed;
 
         private float speedMax;
+        public DateTime lastShoot;
+        public double recharge = 0.2;
 
-        public Player(ContentManager content, string team)
+        public Player(ContentManager content, string team, Vector2 pos)
         {
             this.Team = team;
 
@@ -36,9 +38,24 @@ namespace Echo
 
             texture = content.Load<Texture2D>("player");
 
-            pos = new Vector2(500, 500);
+            this.pos = pos;
             speed = new Vector2(0, 0);
             speedMax = 10;
+
+            lastShoot = DateTime.Now;
+            
+        }
+
+        public bool BulletCollision(Vector2 bulletPos)
+        {
+            var dif = bulletPos - pos;
+            if (dif.Length() <= size.X)
+            {
+                XP--;
+                return true;
+            }
+            
+            return false;
         }
 
         private void Control(GraphicsDevice gd, Camera camera)
@@ -54,14 +71,20 @@ namespace Echo
 
             if (MouseManager.LeftClicked)
             {
-                Vector2 dir = MouseManager.MousePosition - Global.Screen / 2 - size / 2;
-                BulletManager.add(gd, pos + size / 2,
-                                  dir / dir.Length(), Team, id);
+                if (lastShoot.AddSeconds(recharge) < DateTime.Now)
+                {
+                    lastShoot = DateTime.Now;
+                    Vector2 dir = MouseManager.MousePosition - Global.Screen / 2 - size / 2;
+                    BulletManager.add(gd, pos + size / 2, dir / dir.Length(), Team, id);
+                }
             }
         }
 
-        public bool Update(GraphicsDevice gd, Map map, Camera camera)
+        public void Update(GraphicsDevice gd, Map map, Camera camera)
         {
+            if (XP <= 0)
+                Global.state = "gameOver";
+
             this.Control(gd, camera);
 
             if (map.Collision((int)(pos.X + speed.X + 10), (int)(pos.Y + 10), (int)size.X / 2)) {
@@ -84,8 +107,6 @@ namespace Echo
                     speed.Y -= 1;
                 else
                     speed.Y += 1;
-
-            return true;
         }
 
         public void Draw()

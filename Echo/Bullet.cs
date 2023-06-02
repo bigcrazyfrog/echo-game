@@ -44,9 +44,12 @@ namespace Echo
             texture.SetData(data);
         }
 
-        public bool Update(Map map)
+        public bool Update(Map map, Player player)
         {
             if (BotManager.BulletCollision(pos, Team))
+                return false;
+
+            if (Team != Global.team && player.BulletCollision(pos))
                 return false;
 
             if (!map.Collision((int)pos.X + (int)direction.X, (int)pos.Y + (int)direction.Y, r))
@@ -72,22 +75,13 @@ namespace Echo
 
         public static void add(GraphicsDevice gd, Vector2 pos, Vector2 direction, string team, int id)
         {
-            int count = 0;
-            foreach (Bullet bullet in bullets)
-                if (bullet.id == id)
-                {
-                    count += 1;
-                    if (count > 2)
-                        return;
-                }
-
             bullets.Add(new Bullet(gd, pos, direction * speed, team, id));
         }
 
-        public static void Update(GraphicsDevice gd, Map map)
+        public static void Update(GraphicsDevice gd, Map map, Player player)
         {
             foreach (Bullet bullet in bullets)
-                if (!bullet.Update(map))
+                if (!bullet.Update(map, player))
                 {
                     if (bullet.Team == Global.team)
                         FragmentManager.add(gd, bullet.pos);
@@ -99,6 +93,11 @@ namespace Echo
         {
             foreach (Bullet bullet in bullets)
                 bullet.Draw();
+        }
+
+        public static void Uninitialize()
+        {
+            bullets = new HashSet<Bullet>();
         }
     }
 }
