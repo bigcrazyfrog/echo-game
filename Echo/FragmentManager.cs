@@ -27,7 +27,6 @@ namespace Echo
             this.createdAt = DateTime.Now;
 
             var rectangle = new Rectangle(0, 0, r, r);
-
             Color[] data = new Color[rectangle.Width * rectangle.Height];
             texture = new Texture2D(gd, rectangle.Width, rectangle.Height);
 
@@ -72,9 +71,9 @@ namespace Echo
     public static class FragmentManager
     {
         private static HashSet<Fragment> fragments = new HashSet<Fragment>();
-        private static double speed = 23;
-
         public static int Count { get { return fragments.Count; } }
+
+        private static double speed = 23;
 
         public static void add(GraphicsDevice gd, Vector2 bulletPos)
         {

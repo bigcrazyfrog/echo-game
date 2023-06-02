@@ -23,8 +23,8 @@ namespace Echo
 
         public Vector2 pos;
         public Vector2 speed;
-
         private float speedMax;
+
         public DateTime lastShoot;
         public double recharge = 0.2;
 
@@ -43,13 +43,11 @@ namespace Echo
             speedMax = 10;
 
             lastShoot = DateTime.Now;
-            
         }
 
         public bool BulletCollision(Vector2 bulletPos)
         {
-            var dif = bulletPos - pos;
-            if (dif.Length() <= size.X)
+            if ((bulletPos - pos).Length() <= size.X)
             {
                 XP--;
                 return true;
@@ -111,7 +109,6 @@ namespace Echo
 
         public void Draw()
         {
-            //_spriteBatch.Draw(lastTexture, lastPos, Color.White);
             Global._spriteBatch.Draw(texture, pos, Color.White);
         }
     }

@@ -25,9 +25,7 @@ namespace Echo
 
         public void Update(Vector2 pos)
         {
-            float d = delay;
-
-            position = position + (pos - position) * d;
+            position = position + (pos - position) * delay;
 
             transform = Matrix.CreateTranslation(((int)-position.X ) + Global.Screen.X / 2,
                                                  ((int)-position.Y ) + Global.Screen.Y / 2, 0) *
