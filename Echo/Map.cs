@@ -29,7 +29,6 @@ namespace Echo
             var dY = y - other.y;
 
             var len = Math.Sqrt(dX*dX + dY*dY);
-
             return len <= radius - other.radius;
         }
     }
@@ -59,40 +58,32 @@ namespace Echo
 
     public class Map
     {
-        private bool[,] map;
-
-        private int Widht = 10;
-        private int Height = 10;
-        private int Size = 10;
-
         private Circle[] circles;
         private RectangleMap[] rects;
 
-        private Point size;
-
         public Map()
         {
-            size = new Point();
-            map = new bool[Widht, Height];
-
-            circles = new Circle[1];
-            circles[0] = new Circle(500, 500, 300);
-            /*
-            circles = new Circle[2];
-            circles[0] = new Circle(500, 500, 300);
-            circles[1] = new Circle(900, 500, 200);
-            
-            rects = new RectangleMap[1];
-            rects[0] = new RectangleMap(new Vector2(900, 500), new Vector2(500, 500));*/
             Generate();
         }
 
         private void Generate()
         {
-            rects = new RectangleMap[5];
-            rects[0] = new RectangleMap(new Vector2(250, 400), new Vector2(5000, 200));
-            for (int i = 1; i < rects.Length; i++)
-                rects[i] = new RectangleMap(new Vector2(200 + i * 1000, 200), new Vector2(600, 600));
+            circles = new Circle[1];
+            circles[0] = new Circle(500, 500, 300);
+
+            rects = new RectangleMap[11];
+            rects[0] = new RectangleMap(new Vector2(250,  400),  new Vector2(1200, 200));
+            rects[1] = new RectangleMap(new Vector2(1250, 400),  new Vector2(200,  1000));
+            rects[2] = new RectangleMap(new Vector2(1250, 1200), new Vector2(2100, 200));
+            rects[3] = new RectangleMap(new Vector2(1750, 1000), new Vector2(700,  700));
+            rects[4] = new RectangleMap(new Vector2(1750, 400),  new Vector2(200,  2000));
+            rects[5] = new RectangleMap(new Vector2(1750, 250),  new Vector2(800, 200));
+            rects[6] = new RectangleMap(new Vector2(2450, 250),  new Vector2(700, 500));
+            rects[7] = new RectangleMap(new Vector2(2650, 400),  new Vector2(200, 1000));
+            rects[8] = new RectangleMap(new Vector2(1750, 2300), new Vector2(1000, 200));
+            rects[9] = new RectangleMap(new Vector2(2700, 2100), new Vector2(1000, 700));
+
+            rects[10] = new RectangleMap(new Vector2(3300, 1200), new Vector2(200, 1600));
         }
 
         public bool Collision(int x, int y, int r) {
