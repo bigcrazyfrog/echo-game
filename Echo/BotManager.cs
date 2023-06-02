@@ -14,8 +14,6 @@ namespace Echo
 {
     internal class Bot : Player
     {
-        private Vector2 direction;
-        private int r = 10;
         public bool MustDraw = false;
 
         public Bot(ContentManager content, string team, Vector2 pos) : base(content, team, pos)
@@ -56,9 +54,7 @@ namespace Echo
             this.Control(gd, camera);
 
             if (map.Collision((int)(pos.X + speed.X), (int)(pos.Y + speed.Y), 32))
-            {
                 pos += speed;
-            }
 
             return true;
         }
@@ -67,8 +63,6 @@ namespace Echo
     internal static class BotManager
     {
         public static HashSet<Bot> bots = new HashSet<Bot>();
-        private static double speed = 23;
-
         public static int Count { get { return bots.Count; } }
 
         public static void add(ContentManager content, string team, Vector2 pos)
